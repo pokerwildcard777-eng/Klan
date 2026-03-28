@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>クラン ダッシュボード</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --bg: #0a0c0f;
+  --surface: #111318;
+  --surface2: #181c23;
+  --border: #1e2330;
+  --up: #00e676;
+  --down: #ff3d57;
+  --flat: #8892a4;
+  --accent: #4fc3f7;
+  --text: #e8eaf0;
+  --muted: #4a5568;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans JP', sans-serif;
+  min-height: 100vh;
+}
+
+header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 16px 10px;
+  position: sticky;
+  top: 0;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.logo {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent);
+}
+
+.time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.section { padding: 14px 16px; }
+
+.stock-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.stock-card.up { color: var(--up); }
+.stock-card.down { color: var(--down); }
+
+.stock-name { font-size: 13px; }
+.stock-price { font-family: 'JetBrains Mono', monospace; }
+
+button {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 4px 8px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: var(--bg);
+  padding: 8px 16px;
+  border-radius: 20px;
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="logo">KLAN</div>
+    <div class="time" id="clock"></div>
+  </div>
+</header>
+
+<div class="section" id="list"></div>
+
+<div class="toast" id="toast">コピーした</div>
+
+<script>
+const stocks = [
+  { code: '6526', name: 'ソシオネクスト', price: 2037, chg: 2.5 },
+  { code: '7011', name: '三菱重工', price: 4577, chg: 1.4 },
+  { code: '8035', name: '東エレ', price: 39290, chg: -3.0 }
+];
+
+function render() {
+  const el = document.getElementById('list');
+  el.innerHTML = '';
+
+  stocks.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'stock-card ' + (s.chg > 0 ? 'up' : 'down');
+    div.innerHTML = `
+      <div class="stock-name">${s.name}<br>${s.code}</div>
+      <div class="stock-price">¥${s.price} (${s.chg}%)</div>
+      <button onclick="copy('${s.code}')">copy</button>
+    `;
+    el.appendChild(div);
+  });
+}
+
+function copy(code) {
+  navigator.clipboard.writeText(code);
+  const t = document.getElementById('toast');
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 1000);
+}
+
+function clock() {
+  document.getElementById('clock').textContent =
+    new Date().toLocaleTimeString();
+}
+
+setInterval(clock, 1000);
+clock();
+render();
+</script>
+
+</body>
+</html>
