@@ -4,148 +4,173 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>クラン ダッシュボード</title>
-
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap');
-
-:root {
-  --bg: #0a0c0f;
-  --surface: #111318;
-  --surface2: #181c23;
-  --border: #1e2330;
-  --up: #00e676;
-  --down: #ff3d57;
-  --flat: #8892a4;
-  --accent: #4fc3f7;
-  --text: #e8eaf0;
-  --muted: #4a5568;
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Noto Sans JP', sans-serif;
-  min-height: 100vh;
-}
-
-header {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 14px 16px 10px;
-  position: sticky;
-  top: 0;
-}
-
-.header-top {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-.logo {
-  font-family: 'JetBrains Mono', monospace;
-  color: var(--accent);
-}
-
-.time {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.section { padding: 14px 16px; }
-
-.stock-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 6px;
-}
-
-.stock-card.up { color: var(--up); }
-.stock-card.down { color: var(--down); }
-
-.stock-name { font-size: 13px; }
-.stock-price { font-family: 'JetBrains Mono', monospace; }
-
-button {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 4px 8px;
-}
-
-.toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--accent);
-  color: var(--bg);
-  padding: 8px 16px;
-  border-radius: 20px;
-  display: none;
-}
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap');
+  :root {
+    --bg: #0a0c0f; --surface: #111318; --surface2: #181c23;
+    --border: #1e2330; --up: #00e676; --down: #ff3d57;
+    --accent: #4fc3f7; --text: #e8eaf0; --muted: #4a5568;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Noto Sans JP', sans-serif; padding-bottom: 40px; }
+  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 16px 10px; position: sticky; top: 0; z-index: 10; }
+  .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .logo { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 600; color: var(--accent); letter-spacing: 2px; }
+  .time { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--muted); }
+  .market-bar { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .market-bar::-webkit-scrollbar { display: none; }
+  .market-item { flex-shrink: 0; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; min-width: 85px; }
+  .market-item .label { font-size: 9px; color: var(--muted); margin-bottom: 2px; }
+  .market-item .value { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; }
+  .market-item .chg { font-size: 9px; font-family: 'JetBrains Mono', monospace; }
+  .section { padding: 14px 16px 0; }
+  .section-title { font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+  .stock-list { display: flex; flex-direction: column; gap: 6px; }
+  .stock-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; display: flex; align-items: center; gap: 8px; position: relative; overflow: hidden; }
+  .stock-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+  .stock-card.up::before { background: var(--up); }
+  .stock-card.down::before { background: var(--down); }
+  .stock-card.flat::before { background: var(--muted); }
+  .tag { font-size: 9px; padding: 2px 5px; border-radius: 3px; font-weight: 500; flex-shrink: 0; }
+  .tag-trade { background: rgba(79,195,247,0.15); color: var(--accent); border: 1px solid rgba(79,195,247,0.3); }
+  .tag-nisa { background: rgba(255,183,77,0.12); color: #ffb74d; border: 1px solid rgba(255,183,77,0.25); }
+  .tag-watch { background: rgba(138,180,248,0.1); color: #8ab4f8; border: 1px solid rgba(138,180,248,0.2); }
+  .stock-name { flex: 1; font-size: 13px; font-weight: 500; }
+  .stock-name .code { font-size: 10px; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: 1px; }
+  .stock-price { text-align: right; flex-shrink: 0; }
+  .price { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 600; }
+  .pct { font-family: 'JetBrains Mono', monospace; font-size: 10px; margin-top: 1px; }
+  .stock-card.up .price, .stock-card.up .pct { color: var(--up); }
+  .stock-card.down .price, .stock-card.down .pct { color: var(--down); }
+  .stock-card.flat .price, .stock-card.flat .pct { color: var(--muted); }
+  .edit-price { font-family: 'JetBrains Mono', monospace; font-size: 14px; background: var(--surface2); border: 1px solid var(--accent); border-radius: 4px; color: var(--text); padding: 2px 6px; width: 80px; text-align: right; }
+  .copy-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--muted); font-size: 10px; padding: 4px 8px; cursor: pointer; font-family: 'Noto Sans JP', sans-serif; flex-shrink: 0; }
+  .copy-all-btn { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--accent); font-size: 13px; padding: 12px; cursor: pointer; font-family: 'Noto Sans JP', sans-serif; letter-spacing: 1px; margin-top: 16px; }
+  .divider { height: 1px; background: var(--border); margin: 16px 16px 0; }
+  .note { font-size: 10px; color: var(--muted); padding: 8px 16px 0; text-align: center; }
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(60px); background: var(--accent); color: var(--bg); padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 700; transition: transform 0.3s; z-index: 100; pointer-events: none; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
 </style>
 </head>
-
 <body>
-
 <header>
   <div class="header-top">
     <div class="logo">KLAN</div>
     <div class="time" id="clock"></div>
   </div>
+  <div class="market-bar">
+    <div class="market-item"><div class="label">日経平均</div><div class="value" id="nk-v">53,603</div><div class="chg" id="nk-c" style="color:var(--down)">-145 (-0.27%)</div></div>
+    <div class="market-item"><div class="label">ダウ</div><div class="value" id="dw-v">42,587</div><div class="chg" id="dw-c" style="color:var(--up)">+404 (+0.96%)</div></div>
+    <div class="market-item"><div class="label">NASDAQ</div><div class="value" id="nd-v">17,980</div><div class="chg" id="nd-c" style="color:var(--up)">+194 (+1.09%)</div></div>
+    <div class="market-item"><div class="label">ドル円</div><div class="value" id="fx-v">159.38</div><div class="chg" id="fx-c" style="color:var(--up)">+0.42 (+0.26%)</div></div>
+    <div class="market-item"><div class="label">VIX</div><div class="value" id="vx-v">21.4</div><div class="chg" id="vx-c" style="color:var(--down)">-1.2 (-5.3%)</div></div>
+  </div>
 </header>
 
-<div class="section" id="list"></div>
-
-<div class="toast" id="toast">コピーした</div>
+<div class="section" style="margin-top:14px">
+  <div class="section-title">短期トレード候補</div>
+  <div class="stock-list" id="trade-list"></div>
+</div>
+<div class="divider"></div>
+<div class="section">
+  <div class="section-title">ウォッチ（相場体温計）</div>
+  <div class="stock-list" id="watch-list"></div>
+</div>
+<div class="divider"></div>
+<div class="section">
+  <div class="section-title">NISA 保有</div>
+  <div class="stock-list" id="nisa-list"></div>
+</div>
+<div class="section">
+  <button class="copy-all-btn" onclick="copyAll()">📋 クランに全データをコピー</button>
+</div>
+<p class="note">※ 前日終値ベース｜価格欄をタップして編集可能</p>
+<div class="toast" id="toast">コピーしました！</div>
 
 <script>
-const stocks = [
-  { code: '6526', name: 'ソシオネクスト', price: 2037, chg: 2.5 },
-  { code: '7011', name: '三菱重工', price: 4577, chg: 1.4 },
-  { code: '8035', name: '東エレ', price: 39290, chg: -3.0 }
-];
+const data = {
+  trade: [
+    {code:'6254', name:'野村マイクロサイエンス', price:3185, pct:'+0.78'},
+    {code:'6526', name:'ソシオネクスト', price:2037, pct:'+2.52'},
+  ],
+  watch: [
+    {code:'6857', name:'アドバンテスト', price:22070, pct:'-3.90'},
+    {code:'6525', name:'KOKUSAI ELECTRIC', price:5373, pct:'-5.64'},
+    {code:'8035', name:'東京エレクトロン', price:39290, pct:'-3.06'},
+    {code:'5803', name:'フジクラ', price:27630, pct:'-1.73'},
+    {code:'8316', name:'三井住友FG', price:5246, pct:'0.00'},
+    {code:'7735', name:'SCREENホールディングス', price:19080, pct:'-2.43'},
+    {code:'4369', name:'トリケミカル', price:2741, pct:'-0.11'},
+    {code:'6146', name:'ディスコ', price:66530, pct:'-1.42'},
+    {code:'7011', name:'三菱重工業', price:4577, pct:'+1.46'},
+  ],
+  nisa: [
+    {code:'9432', name:'NTT', price:159, pct:'+0.13'},
+    {code:'8593', name:'三菱HCキャピタル', price:1447.5, pct:'+0.24'},
+    {code:'8306', name:'三菱UFJ', price:2715, pct:'+0.54'},
+    {code:'7198', name:'SBIアルヒ', price:862, pct:'-0.12'},
+  ]
+};
 
-function render() {
-  const el = document.getElementById('list');
+function dir(p) { const n=parseFloat(p); return n>0?'up':n<0?'down':'flat'; }
+
+function render(id, items, tag, cls) {
+  const el = document.getElementById(id);
   el.innerHTML = '';
-
-  stocks.forEach(s => {
+  items.forEach((s,i) => {
+    const d = dir(s.pct);
+    const sign = parseFloat(s.pct)>0?'+':'';
     const div = document.createElement('div');
-    div.className = 'stock-card ' + (s.chg > 0 ? 'up' : 'down');
+    div.className = `stock-card ${d}`;
     div.innerHTML = `
-      <div class="stock-name">${s.name}<br>${s.code}</div>
-      <div class="stock-price">¥${s.price} (${s.chg}%)</div>
-      <button onclick="copy('${s.code}')">copy</button>
-    `;
+      <span class="tag ${cls}">${tag}</span>
+      <div class="stock-name">${s.name}<div class="code">${s.code}</div></div>
+      <div class="stock-price">
+        <input class="edit-price" value="${s.price.toLocaleString()}" onchange="update('${id}',${i},this.value)" onclick="event.stopPropagation()"/>
+        <div class="pct">${sign}${s.pct}%</div>
+      </div>
+      <button class="copy-btn" onclick="copyOne('${id}',${i})">コピー</button>`;
     el.appendChild(div);
   });
 }
 
-function copy(code) {
-  navigator.clipboard.writeText(code);
-  const t = document.getElementById('toast');
-  t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 1000);
+function update(id, i, val) {
+  const key = id.replace('-list','');
+  const n = parseFloat(val.replace(/,/g,''));
+  if (!isNaN(n)) data[key][i].price = n;
 }
 
-function clock() {
-  document.getElementById('clock').textContent =
-    new Date().toLocaleTimeString();
+function copyOne(id, i) {
+  const key = id.replace('-list','');
+  const s = data[key][i];
+  navigator.clipboard.writeText(`${s.code} ${s.name} ¥${s.price.toLocaleString()} (${s.pct}%)`).then(()=>toast());
 }
 
+function copyAll() {
+  let t = `【クラン 株価レポート】${new Date().toLocaleString('ja-JP')}\n\n`;
+  t += `■ 市場指標\n日経: ${document.getElementById('nk-v').textContent}\nダウ: ${document.getElementById('dw-v').textContent}\nNASDAQ: ${document.getElementById('nd-v').textContent}\nドル円: ${document.getElementById('fx-v').textContent}\nVIX: ${document.getElementById('vx-v').textContent}\n\n`;
+  t += '■ 短期トレード候補\n';
+  data.trade.forEach(s=>{ t+=`${s.code} ${s.name}: ¥${s.price.toLocaleString()} (${s.pct}%)\n`; });
+  t += '\n■ ウォッチ\n';
+  data.watch.forEach(s=>{ t+=`${s.code} ${s.name}: ¥${s.price.toLocaleString()} (${s.pct}%)\n`; });
+  t += '\n■ NISA保有\n';
+  data.nisa.forEach(s=>{ t+=`${s.code} ${s.name}: ¥${s.price.toLocaleString()} (${s.pct}%)\n`; });
+  navigator.clipboard.writeText(t).then(()=>toast());
+}
+
+function toast() {
+  const el = document.getElementById('toast');
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 2000);
+}
+
+function clock() { document.getElementById('clock').textContent = new Date().toLocaleTimeString('ja-JP'); }
+
+render('trade-list', data.trade, 'TRADE', 'tag-trade');
+render('watch-list', data.watch, 'WATCH', 'tag-watch');
+render('nisa-list', data.nisa, 'NISA', 'tag-nisa');
 setInterval(clock, 1000);
 clock();
-render();
 </script>
-
 </body>
 </html>
